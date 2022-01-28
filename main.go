@@ -4,12 +4,16 @@ import (
 	"log"
 	"runtime"
 
-	// "github.com/go-gl/gl/v4.3-core/gl"
-	"github.com/go-gl/glfw/v3.2/glfw"
-	// "log"
-	// "runtime"
 	"github.com/go-gl/gl/v4.1-core/gl"
-	// "github.com/go-gl/glfw/v3.2/glfw"
+	"github.com/go-gl/glfw/v3.2/glfw"
+)
+
+var (
+	triangle = []float32{
+			0, 0.5, 0, // top
+			-0.5, -0.5, 0, // left
+			0.5, -0.5, 0, // right
+	}
 )
 
 const (
@@ -25,14 +29,18 @@ func main() {
 	
 	program := initOpenGL()
 
+	vao := makeVao(triangle)
 	for !window.ShouldClose() {
-			draw(window, program)
+			draw(vao, window, program)
 	}
 }
 
-func draw(window *glfw.Window, program uint32) {
+func draw(vao uint32, window *glfw.Window, program uint32) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	gl.UseProgram(program)
+	
+	gl.BindVertexArray(vao)
+	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(triangle) / 3))
 	
 	glfw.PollEvents()
 	window.SwapBuffers()
@@ -70,4 +78,22 @@ func initOpenGL() uint32 {
 	prog := gl.CreateProgram()
 	gl.LinkProgram(prog)
 	return prog
+}
+
+// makeVao initialises and returns a vertex array object from the points provided.
+func makeVao(points []float32) uint32 {
+	var vertexBufferObject uint32
+	floatSize := 4	// a float32 takes up 4 bytes in memory
+	gl.GenBuffers(1, &vertexBufferObject)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vertexBufferObject)
+	gl.BufferData(gl.ARRAY_BUFFER, floatSize*len(points), gl.Ptr(points), gl.STATIC_DRAW)
+	
+	var vertexArrayObject uint32
+	gl.GenVertexArrays(1, &vertexArrayObject)
+	gl.BindVertexArray(vertexArrayObject)
+	gl.EnableVertexAttribArray(0)
+	gl.BindBuffer(gl.ARRAY_BUFFER, vertexBufferObject)
+	gl.VertexAttribPointer(0, 3, gl.FLOAT, false, 0, nil)
+	
+	return vertexArrayObject
 }
