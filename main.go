@@ -12,12 +12,15 @@ import (
 )
 
 var (
-	triangle = []float32{
-			0, 0.5, 0, // top
-			-0.5, -0.5, 0, // left
-			0.5, -0.5, 0, // right
-	}
+	square = []float32{
+    -0.5, 0.5, 0,
+    -0.5, -0.5, 0,
+    0.5, -0.5, 0,
 
+    -0.5, 0.5, 0,
+    0.5, 0.5, 0,
+    0.5, -0.5, 0,
+}
 	vertexShaderSource = shader.Import("vertexShader")
 	fragmentShaderSource = shader.Import("fragmentShader")
 )
@@ -35,7 +38,7 @@ func main() {
 	
 	program := initOpenGL()
 
-	vao := makeVao(triangle)
+	vao := makeVao(square)
 	for !window.ShouldClose() {
 			draw(vao, window, program)
 	}
@@ -46,7 +49,7 @@ func draw(vao uint32, window *glfw.Window, program uint32) {
 	gl.UseProgram(program)
 	
 	gl.BindVertexArray(vao)
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(triangle) / 3))
+	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
 	
 	glfw.PollEvents()
 	window.SwapBuffers()
