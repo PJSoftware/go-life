@@ -18,3 +18,11 @@ go mod init github.com/PJSoftware/go-life
 go get github.com/go-gl/gl/v4.1-core/gl
 go get github.com/go-gl/glfw/v3.2/glfw
 ```
+
+## OpenGL Shaders
+
+See the [Reference Manual](https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.3.30.pdf).
+
+The code worked -- produced a white triangle on a black screen -- before we added the shader code. The tutorial said it wouldn't.
+
+Clearly OpenGL shaders are an important topic that I'll need to wrap my head around, but for now we'll simply keep them in here as presented.
