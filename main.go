@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/PJSoftware/go-life/shader"
 	"github.com/go-gl/gl/v4.1-core/gl"
 	"github.com/go-gl/glfw/v3.2/glfw"
 )
@@ -16,27 +17,14 @@ var (
 			-0.5, -0.5, 0, // left
 			0.5, -0.5, 0, // right
 	}
+
+	vertexShaderSource = shader.Import("vertexShader")
+	fragmentShaderSource = shader.Import("fragmentShader")
 )
 
 const (
 	width  = 500
 	height = 500
-
-	vertexShaderSource = `
-    #version 410
-    in vec3 vp;
-    void main() {
-        gl_Position = vec4(vp, 1.0);
-    }
-	` + "\x00"
-
-	fragmentShaderSource = `
-			#version 410
-			out vec4 frag_colour;
-			void main() {
-					frag_colour = vec4(1, 1, 1, 1);
-			}
-	` + "\x00"
 )
 
 func main() {
