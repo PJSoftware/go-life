@@ -14,6 +14,8 @@ import (
 )
 
 var (
+	VERSION = "0.0.1"
+
 	unitSquare = []float32{
     -0.5, 0.5, 0,		// triangle, bottom-left
     -0.5, -0.5, 0,
@@ -145,7 +147,7 @@ func initGlfw() *glfw.Window {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
-	window, err := glfw.CreateWindow(boardSize, boardSize, "Conway's Game of Life", nil, nil)
+	window, err := glfw.CreateWindow(boardSize, boardSize, "PJSoftware | Conway's Game of Life | v" + VERSION, nil, nil)
 	if err != nil {
 		panic(err)
 	}
