@@ -13,14 +13,15 @@ import (
 
 var (
 	unitSquare = []float32{
-    -0.5, 0.5, 0,
+    -0.5, 0.5, 0,		// triangle, bottom-left
     -0.5, -0.5, 0,
     0.5, -0.5, 0,
 
-    -0.5, 0.5, 0,
+    -0.5, 0.5, 0,		// triangle, top-right
     0.5, 0.5, 0,
     0.5, -0.5, 0,
-}
+	}
+
 	vertexShaderSource = shader.Import("vertexShader")
 	fragmentShaderSource = shader.Import("fragmentShader")
 )
