@@ -26,11 +26,8 @@ var (
 )
 
 const (
-	width  = 500
-	height = 500
-
-	rows = 10
-	columns = 10
+	boardDim = 640 // pixels
+	boardSize = 28 // cells
 )
 
 type cell struct {
@@ -48,9 +45,7 @@ func main() {
 	
 	program := initOpenGL()
 
-	// vao := makeVao(square)
-	cells := makeCells()
-    
+	cells := makeCells()    
 	for !window.ShouldClose() {
 			draw(cells, window, program)
 	}
@@ -77,11 +72,11 @@ func draw(cells [][]*cell, window *glfw.Window, program uint32) {
 }
 
 func makeCells() [][]*cell {
-	cells := make([][]*cell, rows)
-	for x := 0; x < rows; x++ {
-			for y := 0; y < columns; y++ {
-					c := newCell(x, y)
-					cells[x] = append(cells[x], c)
+	cells := make([][]*cell, boardSize)
+	for x := 0; x < boardSize; x++ {
+		cells[x] = make([]*cell, boardSize)
+			for y := 0; y < boardSize; y++ {
+					cells[x][y] = newCell(x, y)
 			}
 	}
 	
@@ -91,26 +86,22 @@ func makeCells() [][]*cell {
 func newCell(x, y int) *cell {
 	points := make([]float32, len(square))
 	copy(points, square)
+	
+	spacingPx := float32(boardDim) / float32(boardSize)
+	cellSizePx := spacingPx - 2.0
+	xPx := spacingPx * (float32(x) + 0.5)
+	yPx := spacingPx * (float32(y) + 0.5)
+	scaleFactor := 2.0 / float32(boardDim)
 
 	for i := 0; i < len(points); i++ {
-		var position float32
-		var size float32
 		switch i % 3 {
-		case 0:
-			size = 1.0 / float32(columns)
-			position = float32(x) * size
-		case 1:
-			size = 1.0 / float32(rows)
-			position = float32(y) * size
-		default:
-			continue
-		}
-
-		if points[i] < 0 {
-			points[i] = (position * 2) - 1
-		} else {
-			points[i] = ((position + size) * 2) - 1
-		}
+			case 0: // x
+				points[i] = (xPx + cellSizePx * points[i]) * scaleFactor - 1.0
+			case 1: // y
+				points[i] = (yPx + cellSizePx * points[i]) * scaleFactor - 1.0
+			default: // z = 0
+				continue
+			}
 	}
 
 	return &cell{
@@ -133,7 +124,7 @@ func initGlfw() *glfw.Window {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
-	window, err := glfw.CreateWindow(width, height, "Conway's Game of Life", nil, nil)
+	window, err := glfw.CreateWindow(boardDim, boardDim, "Conway's Game of Life", nil, nil)
 	if err != nil {
 					panic(err)
 	}
