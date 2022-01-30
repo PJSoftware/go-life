@@ -6,7 +6,7 @@ import (
 )
 
 func Import(glslFile string) string {
-	content, err := os.ReadFile("shader/" + glslFile + ".glsl")
+	content, err := os.ReadFile("shader/shaders/" + glslFile + ".glsl")
 	if err != nil {
 		log.Fatal(err)
 	}
