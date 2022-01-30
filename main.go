@@ -65,13 +65,13 @@ func main() {
 	draw(cells, window, program)
 	time.Sleep(time.Second/time.Duration(fps) - time.Since(t))
 	}
-
 }
 
 func (c *cell) draw() {
 	if !c.alive {
 		return
 	}
+
 	gl.BindVertexArray(c.drawable)
 	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(unitSquare) / 3))
 }
@@ -98,7 +98,6 @@ func makeCells() [][]*cell {
 			cells[x][y] = newCell(x, y)				
 		}
 	}
-	
 	return cells
 }
 
@@ -137,7 +136,7 @@ func newCell(x, y int) *cell {
 // initGlfw initializes glfw and returns a Window to use.
 func initGlfw() *glfw.Window {
 	if err := glfw.Init(); err != nil {
-					panic(err)
+		panic(err)
 	}
 	
 	glfw.WindowHint(glfw.Resizable, glfw.False)
@@ -148,7 +147,7 @@ func initGlfw() *glfw.Window {
 
 	window, err := glfw.CreateWindow(boardSize, boardSize, "Conway's Game of Life", nil, nil)
 	if err != nil {
-					panic(err)
+		panic(err)
 	}
 	window.MakeContextCurrent()
 
@@ -163,20 +162,21 @@ func initOpenGL() uint32 {
 	version := gl.GoStr(gl.GetString(gl.VERSION))
 	log.Println("OpenGL version", version)
 
-    vertexShader, err := compileShader(vertexShaderSource, gl.VERTEX_SHADER)
-    if err != nil {
-        panic(err)
-    }
-    fragmentShader, err := compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
-    if err != nil {
-        panic(err)
-    }
+	vertexShader, err := compileShader(vertexShaderSource, gl.VERTEX_SHADER)
+	if err != nil {
+		panic(err)
+	}
 
-    prog := gl.CreateProgram()
-    gl.AttachShader(prog, vertexShader)
-    gl.AttachShader(prog, fragmentShader)
-    gl.LinkProgram(prog)
-    return prog
+	fragmentShader, err := compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
+	if err != nil {
+		panic(err)
+	}
+
+	prog := gl.CreateProgram()
+	gl.AttachShader(prog, vertexShader)
+	gl.AttachShader(prog, fragmentShader)
+	gl.LinkProgram(prog)
+	return prog
 }
 
 // makeVao initialises and returns a vertex array object from the points provided.
@@ -208,13 +208,13 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 	var status int32
 	gl.GetShaderiv(shader, gl.COMPILE_STATUS, &status)
 	if status == gl.FALSE {
-			var logLength int32
-			gl.GetShaderiv(shader, gl.INFO_LOG_LENGTH, &logLength)
-			
-			log := strings.Repeat("\x00", int(logLength+1))
-			gl.GetShaderInfoLog(shader, logLength, nil, gl.Str(log))
-			
-			return 0, fmt.Errorf("failed to compile %v: %v", source, log)
+		var logLength int32
+		gl.GetShaderiv(shader, gl.INFO_LOG_LENGTH, &logLength)
+		
+		log := strings.Repeat("\x00", int(logLength+1))
+		gl.GetShaderInfoLog(shader, logLength, nil, gl.Str(log))
+		
+		return 0, fmt.Errorf("failed to compile %v: %v", source, log)
 	}
 	
 	return shader, nil
@@ -223,29 +223,16 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 // checkState determines the state of the cell for the next tick of the game.
 func (c *cell) checkState(cells [][]*cell) {
 	c.alive = c.aliveNext
-	// c.aliveNext = c.alive -- not required?
 	
 	liveCount := c.liveNeighbors(cells)
 	if c.alive {
-			// 1. Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
-			if liveCount < 2 {
-					c.aliveNext = false
-			}
-			
-			// 2. Any live cell with two or three live neighbours lives on to the next generation.
-			if liveCount == 2 || liveCount == 3 {
-					c.aliveNext = true
-			}
-			
-			// 3. Any live cell with more than three live neighbours dies, as if by overpopulation.
-			if liveCount > 3 {
-					c.aliveNext = false
-			}
+		if liveCount < 2 || liveCount > 3 {
+			c.aliveNext = false
+		}
 	} else {
-			// 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-			if liveCount == 3 {
-					c.aliveNext = true
-			}
+		if liveCount == 3 {
+			c.aliveNext = true
+		}
 	}
 }
 
@@ -253,21 +240,21 @@ func (c *cell) checkState(cells [][]*cell) {
 func (c *cell) liveNeighbors(cells [][]*cell) int {
 	var liveCount int
 	add := func(x, y int) {
-			// If we're at an edge, check the other side of the board.
-			if x == numCells {
-					x = 0
-			} else if x == -1 {
-					x = numCells - 1
-			}
-			if y == numCells {
-					y = 0
-			} else if y == -1 {
-					y = numCells - 1
-			}
-			
-			if cells[x][y].alive {
-					liveCount++
-			}
+		// If we're at an edge, check the other side of the board.
+		if x == numCells {
+			x = 0
+		} else if x == -1 {
+			x = numCells - 1
+		}
+		if y == numCells {
+			y = 0
+		} else if y == -1 {
+			y = numCells - 1
+		}
+		
+		if cells[x][y].alive {
+				liveCount++
+		}
 	}
 	
 	add(c.x-1, c.y)   // To the left
