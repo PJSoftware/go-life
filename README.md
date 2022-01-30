@@ -21,7 +21,7 @@ go get github.com/go-gl/glfw/v3.2/glfw
 
 ## OpenGL Shaders
 
-See the [Reference Manual](https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.3.30.pdf).
+See the [Version 4.10 Reference Manual](https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.4.10.pdf).
 
 The code worked -- produced a white triangle on a black screen -- before we added the shader code. The tutorial said it wouldn't.
 
