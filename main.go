@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	square = []float32{
+	unitSquare = []float32{
     -0.5, 0.5, 0,
     -0.5, -0.5, 0,
     0.5, -0.5, 0,
@@ -26,9 +26,16 @@ var (
 )
 
 const (
-	width  = 500
-	height = 500
+	boardSize = 640 // pixels (square)
+	numCells = 32 // cells across and down
 )
+
+type cell struct {
+	drawable uint32
+	
+	x int
+	y int
+}
 
 func main() {
 	runtime.LockOSThread()
@@ -38,21 +45,70 @@ func main() {
 	
 	program := initOpenGL()
 
-	vao := makeVao(square)
+	cells := makeCells()    
 	for !window.ShouldClose() {
-			draw(vao, window, program)
+			draw(cells, window, program)
 	}
+
 }
 
-func draw(vao uint32, window *glfw.Window, program uint32) {
+func (c *cell) draw() {
+	gl.BindVertexArray(c.drawable)
+	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(unitSquare) / 3))
+}
+
+func draw(cells [][]*cell, window *glfw.Window, program uint32) {
 	gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 	gl.UseProgram(program)
-	
-	gl.BindVertexArray(vao)
-	gl.DrawArrays(gl.TRIANGLES, 0, int32(len(square) / 3))
-	
+
+	for x := range cells {
+		for _, c := range cells[x] {
+				c.draw()
+		}
+	}
+
 	glfw.PollEvents()
 	window.SwapBuffers()
+}
+
+func makeCells() [][]*cell {
+	cells := make([][]*cell, numCells)
+	for x := 0; x < numCells; x++ {
+		cells[x] = make([]*cell, numCells)
+			for y := 0; y < numCells; y++ {
+					cells[x][y] = newCell(x, y)
+			}
+	}
+	
+	return cells
+}
+
+func newCell(x, y int) *cell {
+	points := make([]float32, len(unitSquare))
+	copy(points, unitSquare)
+	
+	spacingPx := float32(boardSize) / float32(numCells)
+	cellSizePx := spacingPx - 2.0
+	xPx := spacingPx * (float32(x) + 0.5)
+	yPx := spacingPx * (float32(y) + 0.5)
+	scaleFactor := 2.0 / float32(boardSize)
+
+	for i := 0; i < len(points); i++ {
+		switch i % 3 {
+			case 0: // x
+				points[i] = (xPx + cellSizePx * points[i]) * scaleFactor - 1.0
+			case 1: // y
+				points[i] = (yPx + cellSizePx * points[i]) * scaleFactor - 1.0
+			default: // z = 0
+				continue
+			}
+	}
+
+	return &cell{
+		drawable: makeVao(points),
+		x: x,
+		y: y,
+	}
 }
 
 // initGlfw initializes glfw and returns a Window to use.
@@ -67,7 +123,7 @@ func initGlfw() *glfw.Window {
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
 
-	window, err := glfw.CreateWindow(width, height, "Conway's Game of Life", nil, nil)
+	window, err := glfw.CreateWindow(boardSize, boardSize, "Conway's Game of Life", nil, nil)
 	if err != nil {
 					panic(err)
 	}
