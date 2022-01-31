@@ -32,9 +32,9 @@ var (
 
 const (
 	boardSize = 640 // pixels (square)
-	numCells = 32 // cells across and down
+	numCells = 64 // cells across and down
 	threshold = 0.15 // chance of starting cell being alive
-	fps = 10
+	fps = 12
 )
 
 type cell struct {
