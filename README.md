@@ -21,7 +21,7 @@ go get github.com/go-gl/glfw/v3.2/glfw
 
 ## OpenGL Shaders
 
-See the [Reference Manual](https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.3.30.pdf).
+See the [Version 4.10 Reference Manual](https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.4.10.pdf).
 
 The code worked -- produced a white triangle on a black screen -- before we added the shader code. The tutorial said it wouldn't.
 
@@ -42,3 +42,15 @@ The tutorial suggests the following challenges:
 I've already implemented #6 because it seemed a better approach at the time.
 
 The other thing I've modified from the original tutorial is changing the size of the cells to allow a pixel border around each cell. I much prefer how this looks.
+
+## Refactor Attempt
+
+I attempted to refactor the code in one or more of three ways:
+
+- Move the Cell code to its own package
+- Move the OpenGL code to its own package
+- Move `compileShader` into the shader package
+
+In both cases, this splits the references to `gl.*` across multiple packages -- at which point the first call to a `gl.*` function fails in unexpected ways.
+
+Possibly this is due to a misunderstanding on my part; it seems splitting the gl references across multiple packages actually creates two independent gl copies, neither of which is properly initialised.
