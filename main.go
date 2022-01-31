@@ -135,6 +135,55 @@ func newCell(x, y int) *cell {
 	}
 }
 
+// checkState determines the state of the cell for the next tick of the game.
+func (c *cell) checkState(cells [][]*cell) {
+	c.alive = c.aliveNext
+	
+	liveCount := c.liveNeighbors(cells)
+	if c.alive {
+		if liveCount < 2 || liveCount > 3 {
+			c.aliveNext = false
+		}
+	} else {
+		if liveCount == 3 {
+			c.aliveNext = true
+		}
+	}
+}
+
+// liveNeighbors returns the number of live neighbors for a cell.
+func (c *cell) liveNeighbors(cells [][]*cell) int {
+	var liveCount int
+	add := func(x, y int) {
+		// If we're at an edge, check the other side of the board.
+		if x == numCells {
+			x = 0
+		} else if x == -1 {
+			x = numCells - 1
+		}
+		if y == numCells {
+			y = 0
+		} else if y == -1 {
+			y = numCells - 1
+		}
+		
+		if cells[x][y].alive {
+				liveCount++
+		}
+	}
+	
+	add(c.x-1, c.y)   // To the left
+	add(c.x+1, c.y)   // To the right
+	add(c.x, c.y+1)   // up
+	add(c.x, c.y-1)   // down
+	add(c.x-1, c.y+1) // top-left
+	add(c.x+1, c.y+1) // top-right
+	add(c.x-1, c.y-1) // bottom-left
+	add(c.x+1, c.y-1) // bottom-right
+	
+	return liveCount
+}
+
 // initGlfw initializes glfw and returns a Window to use.
 func initGlfw() *glfw.Window {
 	if err := glfw.Init(); err != nil {
@@ -220,53 +269,4 @@ func compileShader(source string, shaderType uint32) (uint32, error) {
 	}
 	
 	return shader, nil
-}
-
-// checkState determines the state of the cell for the next tick of the game.
-func (c *cell) checkState(cells [][]*cell) {
-	c.alive = c.aliveNext
-	
-	liveCount := c.liveNeighbors(cells)
-	if c.alive {
-		if liveCount < 2 || liveCount > 3 {
-			c.aliveNext = false
-		}
-	} else {
-		if liveCount == 3 {
-			c.aliveNext = true
-		}
-	}
-}
-
-// liveNeighbors returns the number of live neighbors for a cell.
-func (c *cell) liveNeighbors(cells [][]*cell) int {
-	var liveCount int
-	add := func(x, y int) {
-		// If we're at an edge, check the other side of the board.
-		if x == numCells {
-			x = 0
-		} else if x == -1 {
-			x = numCells - 1
-		}
-		if y == numCells {
-			y = 0
-		} else if y == -1 {
-			y = numCells - 1
-		}
-		
-		if cells[x][y].alive {
-				liveCount++
-		}
-	}
-	
-	add(c.x-1, c.y)   // To the left
-	add(c.x+1, c.y)   // To the right
-	add(c.x, c.y+1)   // up
-	add(c.x, c.y-1)   // down
-	add(c.x-1, c.y+1) // top-left
-	add(c.x+1, c.y+1) // top-right
-	add(c.x-1, c.y-1) // bottom-left
-	add(c.x+1, c.y-1) // bottom-right
-	
-	return liveCount
 }
