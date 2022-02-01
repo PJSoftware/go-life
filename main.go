@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	VERSION = "0.0.2"
+	VERSION = "0.0.3"
 	title = "PJSoftware | Conway's Game of Life | v" + VERSION
 )
 
