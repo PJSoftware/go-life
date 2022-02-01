@@ -4,9 +4,11 @@
     "familiarise",
     "glfw",
     "glsl",
+    "initialisation",
     "initialised",
     "initialises",
     "neighbours",
+    "opengl",
     "Strs"
   ]
 }
