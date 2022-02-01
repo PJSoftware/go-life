@@ -54,3 +54,12 @@ I attempted to refactor the code in one or more of three ways:
 In both cases, this splits the references to `gl.*` across multiple packages -- at which point the first call to a `gl.*` function fails in unexpected ways.
 
 Possibly this is due to a misunderstanding on my part; it seems splitting the gl references across multiple packages actually creates two independent gl copies, neither of which is properly initialised.
+
+### Solution
+
+The actual cause of my refactoring issues was simpler than my suspicions above.
+
+- When I split the GL code into a separate file, I allowed VSCode's automatic formatter to add the requisite `import` lines.
+- I noticed that it had imported **"github.com/go-gl/gl/v4.6-core/gl"**
+- However, this should be **"github.com/go-gl/gl/v4.1-core/gl"**
+- Once I changed the **4.6** back to **4.1**, the code ran perfectly.
