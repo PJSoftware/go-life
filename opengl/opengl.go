@@ -95,7 +95,6 @@ func initGLWindow(win *OpenGLWindow) *glfw.Window {
 
 // initGLProgram initializes OpenGL and returns an initialised program.
 func initGLProgram(shader *OpenGLShaders) uint32 {
-	log.Println(fmt.Sprintf("initGLProgram called: %s / %s", shader.fragmentFile, shader.vertexFile))
 	if err := gl.Init(); err != nil {
 		panic(fmt.Sprintf("gl.init: %s", err.Error()))
 	}
